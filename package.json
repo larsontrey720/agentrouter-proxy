@@ -1,7 +1,4 @@
 {
   "name": "agentrouter-proxy",
-  "type": "module",
-  "dependencies": {
-    "hono": "latest"
-  }
+  "private": true
 }
