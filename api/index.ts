@@ -13,6 +13,26 @@ export default async (request: Request) => {
       });
     }
 
+    // Test route: fetch from httpbin.org
+    if (url.pathname.startsWith('/test/')) {
+      const targetUrl = 'https://httpbin.org/get';
+      const upstream = await fetch(targetUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'vercel-proxy-test',
+        },
+      });
+      const text = await upstream.text();
+      return new Response(text, {
+        status: upstream.status,
+        statusText: upstream.statusText,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    }
+
     // Only proxy /v1/ paths
     if (!url.pathname.startsWith('/v1/')) {
       return new Response(JSON.stringify({ error: 'Not found' }), {
@@ -55,7 +75,7 @@ export default async (request: Request) => {
       },
     });
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message || 'Unknown error' }), {
+    return new Response(JSON.stringify({ error: err.message || 'Unknown error', stack: err.stack }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
