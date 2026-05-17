@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { handle } from 'hono/vercel';
 
 const app = new Hono();
 
@@ -6,9 +7,7 @@ app.all('/v1/*', async (c) => {
   const url = new URL(c.req.url);
   const targetUrl = `https://agentrouter.org${url.pathname}${url.search}`;
   
-  // Extract the authorization header from the incoming request
   const authHeader = c.req.header('Authorization');
-
   if (!authHeader) {
     return c.json({ error: 'Missing Authorization header' }, 401);
   }
@@ -39,4 +38,4 @@ app.all('/v1/*', async (c) => {
   }
 });
 
-export default app;
+export default handle(app);
